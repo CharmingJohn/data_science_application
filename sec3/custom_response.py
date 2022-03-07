@@ -27,7 +27,7 @@ async def redirect():
 
 @app.get('/cat')
 async def get_cat():
-    root_directory = os.path.dirname(path.dirname(__file__))
+    root_directory = os.path.dirname(os.path.dirname(__file__))
     picture_path = os.path.join(root_directory, 'assets', 'cat.jpg')
     return FileResponse(picture_path)
 
