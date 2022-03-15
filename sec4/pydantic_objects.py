@@ -1,7 +1,8 @@
+from http.client import HTTPException
 from pydantic import BaseModel
 from datetime import date
 from enum import Enum
-from typing import List
+from typing import List, Optional
 from fastapi import FastAPI, status
 
 app = FastAPI()
@@ -63,6 +64,10 @@ class PostBase(BaseModel):
 class PostCreate(PostBase):
     pass
 
+class PostPartialUpdate(BaseModel):
+    title: Optional[str] = None
+    content: Optional[str] = None
+
 class PostPublic(PostBase):
     id: int
 
@@ -76,3 +81,17 @@ async def create(post_create: PostCreate):
     post = PostDB(id=new_id, **post_create.dict())
     db.posts[new_id] = post
     return post
+
+
+@app.patch('/posts/{id}', response_model=PostPublic)
+async def partial_update(id: int, post_update: PostPartialUpdate):
+    try:
+        post_db = db.posts[id]
+
+        updated_fields = post_update.dict(exclued_unset=True)
+        updated_post = post_db.copy(update=updated_fields)
+
+        db.posts[id] = updated_post
+        return updated_post
+    except KeyError:
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
