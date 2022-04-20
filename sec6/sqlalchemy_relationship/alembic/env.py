@@ -1,5 +1,5 @@
 from logging.config import fileConfig
-from sec6.sqlalchemy_relationship.models import metadata
+from sec6.sqlalchemy_relationship.models import
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
