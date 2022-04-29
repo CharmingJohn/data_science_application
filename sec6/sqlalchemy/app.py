@@ -83,6 +83,13 @@ async def create_comment(comment: CommentCreate, database: Database = Depends(ge
 
     return CommentDB(**raw_comment)
 
+@app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_post(
+    post: PostDB = Depends(get_post_or_404), database: Database = Depends(get_database)
+):
+    delete_query = posts.delete().where(posts.c.id == post.id)
+    await database.execute(delete_query)
+
 async def get_post_or_404(
     id: int, database: Database = Depends(get_database)
 ) -> PostPublic:
